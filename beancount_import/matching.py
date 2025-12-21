@@ -127,6 +127,7 @@ import collections
 import itertools
 import functools
 import bisect
+import logging
 from typing import Sequence, Tuple, List, NamedTuple, Dict, Callable, Optional, Iterable, Set, cast, FrozenSet, Union, Any
 
 from beancount.core.number import MISSING, ZERO, Decimal
@@ -1042,9 +1043,13 @@ def are_postings_mergeable(a: MatchablePosting, b: MatchablePosting,
     called for postings with equal weights.
     """
     if len(a.source_postings) > 1 and len(b.source_postings) > 1:
+        logging.info(f"match failed because of source postings")
+        logging.info(f"{a} \n {b}")
         return False
 
     if not are_accounts_mergeable(a.posting.account, b.posting.account):
+        logging.info(f"match failed because of accounts not mergable")
+        logging.info(f"{a} \n {b}")
         return False
 
     if len(a.source_postings) > 1:
@@ -1055,6 +1060,8 @@ def are_postings_mergeable(a: MatchablePosting, b: MatchablePosting,
     a_cleared = is_cleared(a.posting)
     b_cleared = is_cleared(b.posting)
     if a_cleared and b_cleared:
+        logging.info(f"match failed because of both cleared")
+        logging.info(f"{a} \n {b}")
         return False
 
     if a_cleared:
@@ -1216,6 +1223,7 @@ def compute_single_sign_match_groups(
         matching_postings = b_lookup_table.find(weight.number - max_residual,
                                                 weight.number + max_residual)
         for b in matching_postings:
+            logging.info(f"matching postings: {matching_postings}")
             if not are_postings_mergeable(a, b, is_cleared):
                 continue
             yield b

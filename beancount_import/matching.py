@@ -1043,13 +1043,11 @@ def are_postings_mergeable(a: MatchablePosting, b: MatchablePosting,
     called for postings with equal weights.
     """
     if len(a.source_postings) > 1 and len(b.source_postings) > 1:
-        logging.info(f"match failed because of source postings")
-        logging.info(f"{a} \n {b}")
+        debug_print(f"match failed because of source postings: \n {a} \n {b}")
         return False
 
     if not are_accounts_mergeable(a.posting.account, b.posting.account):
-        logging.info(f"match failed because of accounts not mergable")
-        logging.info(f"{a} \n {b}")
+        debug_print(f"match failed because of accounts not mergable: \n {a} \n {b}")
         return False
 
     if len(a.source_postings) > 1:
@@ -1060,8 +1058,7 @@ def are_postings_mergeable(a: MatchablePosting, b: MatchablePosting,
     a_cleared = is_cleared(a.posting)
     b_cleared = is_cleared(b.posting)
     if a_cleared and b_cleared:
-        logging.info(f"match failed because of both cleared")
-        logging.info(f"{a} \n {b}")
+        debug_print(f"match failed because of both cleared: \n {a} \n {b}")
         return False
 
     if a_cleared:

@@ -1690,6 +1690,7 @@ def get_single_step_extended_transactions(
             matching_transactions[id(sp.entry)] = sp.entry
     else:
         for mp in matchable_postings:
+            debug_print(f"matchable_posting: {mp}")
             for orig_matching_transaction, _ in _get_valid_posting_matches(
                     transaction_constraint,
                     mp.posting,

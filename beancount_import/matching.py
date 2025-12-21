@@ -1607,7 +1607,7 @@ def _get_valid_posting_matches(
     for matching_transaction, mp in matches:
         if id(matching_transaction) in excluded_transaction_ids:
             continue
-        if not transaction_constraint(matching_transaction): continue
+        # if not transaction_constraint(matching_transaction): continue
         yield matching_transaction, mp
 
 def get_unknown_to_opposite_unknown_extensions(

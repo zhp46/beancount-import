@@ -286,6 +286,13 @@ class RetrainHandler(tornado.web.RequestHandler):
         self.write(json.dumps(None).encode())
 
 
+class ReloadFilesHandler(tornado.web.RequestHandler):
+    def post(self):
+        self.application.reload_files()
+        self.set_header('Content-Type', 'application/json')
+        self.write(json.dumps(None).encode())
+
+
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self, *args):
         self.application.socket_clients.add(self)
@@ -442,6 +449,7 @@ class Application(tornado.web.Application):
             (r'/%s/select_candidate' % secret_key, SelectCandidateHandler),
             (r'/%s/skip' % secret_key, SkipHandler),
             (r'/%s/retrain' % secret_key, RetrainHandler),
+            (r'/%s/reload_files' % secret_key, ReloadFilesHandler),
         ], **kwargs)
         self.socket_clients = set()
         self.watched_files = dict()
@@ -507,6 +515,15 @@ class Application(tornado.web.Application):
     def retrain(self):
         if self.reconciler.loaded_future.done():
             self.reconciler.retrain()
+            self.reset()
+
+    def reload_files(self):
+        if self.reconciler.loaded_future.done():
+            loaded_reconciler = self.reconciler.loaded_future.result()
+            modified_filenames = loaded_reconciler.editor.check_any_journal_modification()
+            if modified_filenames:
+                self._notify_modified_files(list(modified_filenames))
+            self.reconciler.reload_journal()
             self.reset()
 
     def _handle_reconciler_loaded(self, loaded_future):

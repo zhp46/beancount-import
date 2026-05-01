@@ -9,7 +9,8 @@ import {
   PendingEntry,
   UnclearedPosting,
   InvalidReference,
-  JournalError
+  JournalError,
+  executeServerCommand
 } from "./server_connection";
 import {
   EditorComponent,
@@ -101,6 +102,21 @@ const StatusBar = styled.div`
   padding: 4px;
   border-top: 1px solid var(--color-main-accent);
   background-color: var(--color-main-bg);
+`;
+
+const StatusBarRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const ReloadFilesButton = styled.button`
+  font-family: var(--font-fam-sans);
+  font-size: var(--font-size-sans-reg);
+  border: 0;
+  background-color: transparent;
+  color: var(--color-main-text);
+  cursor: pointer;
 `;
 
 enum TabKeys {
@@ -263,6 +279,10 @@ class AppComponent
     });
   };
 
+  private handleReloadFiles = () => {
+    executeServerCommand("reload_files", {});
+  };
+
   componentDidUpdate() {
     this.setUrlFromTab(this.state);
   }
@@ -407,11 +427,16 @@ class AppComponent
             </SplitContainer>
             <StatusBar>
               {this.state.message || ""}
-              <SettingsComponent
-                isOpen={this.state.settingsOpen}
-                onToggle={this.handleToggleSettings}
-                onSettingsChange={this.handleSettingsChange}
-              />
+              <StatusBarRight>
+                <ReloadFilesButton onClick={this.handleReloadFiles}>
+                  Reload files
+                </ReloadFilesButton>
+                <SettingsComponent
+                  isOpen={this.state.settingsOpen}
+                  onToggle={this.handleToggleSettings}
+                  onSettingsChange={this.handleSettingsChange}
+                />
+              </StatusBarRight>
             </StatusBar>
           </AppRootElement>
         </CommonJournalPrefixContext.Provider>

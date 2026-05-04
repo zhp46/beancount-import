@@ -523,7 +523,7 @@ class Application(tornado.web.Application):
             modified_filenames = loaded_reconciler.editor.check_any_journal_modification()
             if modified_filenames:
                 self._notify_modified_files(list(modified_filenames))
-            self.reconciler.reload_journal()
+            self.reconciler.reload_all()
             self.reset()
 
     def _handle_reconciler_loaded(self, loaded_future):

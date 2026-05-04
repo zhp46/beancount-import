@@ -964,6 +964,15 @@ class Reconciler(object):
             classifier=classifier,
             sources=existing_sources)
 
+    def reload_all(self):
+        assert self.loaded_future.done()
+        loaded_reconciler = self.loaded_future.result()
+        classifier = loaded_reconciler.classifier
+        self.loaded_future = call_in_new_thread(
+            LoadedReconciler,
+            reconciler=self,
+            classifier=classifier)
+
     def retrain(self):
         assert self.loaded_future.done()
         loaded_reconciler = self.loaded_future.result()
